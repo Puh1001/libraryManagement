@@ -5,6 +5,8 @@ import { UsersModule } from './features/users/users.module';
 import { DatabaseModule } from './features/db/db.module';
 import * as joi from 'joi';
 import { ConfigModule } from '@nestjs/config';
+import { BooksModule } from './features/books/books.module';
+import { AuthenticationModule } from './features/authentication/authentication.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { ConfigModule } from '@nestjs/config';
     }),
     UsersModule,
     DatabaseModule,
+    BooksModule,
+    AuthenticationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

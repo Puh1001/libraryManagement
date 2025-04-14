@@ -9,8 +9,8 @@ services:
     ports:
       - '27017:27017'
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:-root}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-admin}
     volumes:
       - mongodb_data:/data/db
 
@@ -24,6 +24,25 @@ services:
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
+
+  # API service
+  api:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: library-api
+    restart: always
+    ports:
+      - '8080:8080'
+    depends_on:
+      - mongodb
+      - redis
+    env_file:
+      - ./.env
+    environment:
+      - DATABASE_URL=mongodb://root:admin@mongodb:27017/library-management
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
 
 volumes:
   mongodb_data:
