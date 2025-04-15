@@ -21,6 +21,8 @@ import JwtRefreshAuthenticationGuard from './guards/jwt-refresh.guard';
 import JwtAuthenticationGuard from './guards/jwt.guard';
 import { LocalAuthGuard } from './guards/local.guard';
 import { TokenService } from './token.service';
+import { ApiBody, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { LoginDTO } from './dto/login.dto';
 
 @Controller('api/v1/authentication')
 export class AuthenticationController {
@@ -37,7 +39,10 @@ export class AuthenticationController {
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
+  @ApiOperation({ summary: 'Log in with email and password' })
+  @ApiBody({ type: LoginDTO })
   async login(
+    @Body() LoginDTO: LoginDTO,
     @Req() req: Request & { res: Response },
     @CurrentUser() user: UserDocument,
   ) {
