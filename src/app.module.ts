@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './features/users/users.module';
@@ -7,6 +7,9 @@ import * as joi from 'joi';
 import { ConfigModule } from '@nestjs/config';
 import { BooksModule } from './features/books/books.module';
 import { AuthenticationModule } from './features/authentication/authentication.module';
+import { CookieMiddleware } from './common/middlewares/cookie.middleware';
+import { LoansModule } from './features/loans/loan.module';
+import { BorrowersModule } from './features/borrowers/borrowers.module';
 
 @Module({
   imports: [
@@ -33,8 +36,14 @@ import { AuthenticationModule } from './features/authentication/authentication.m
     DatabaseModule,
     BooksModule,
     AuthenticationModule,
+    LoansModule,
+    BorrowersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(CookieMiddleware).forRoutes('*');
+  }
+}
