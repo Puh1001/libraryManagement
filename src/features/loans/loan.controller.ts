@@ -88,4 +88,13 @@ export class LoansController {
   remove(@Param('id') id: string) {
     return this.loansService.remove(id);
   }
+
+  @Get('reader/history')
+  @UseGuards(JwtAuthenticationGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get loan history for current user' })
+  async getLoanHistoryForUser(userId: string, queryParams: PaginatedParamsDto) {
+    const borrower = await this.borrowerService.findByUserId(userId);
+    return this.findByBorrower(borrower.id, queryParams);
+  }
 }

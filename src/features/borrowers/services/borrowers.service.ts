@@ -58,4 +58,11 @@ export class BorrowersService {
     await this.borrowerRepository.remove({ _id: borrower._id });
     return { success: true };
   }
+
+  async findByUserId(userId: string) {
+    return this.borrowerRepository.findOne(
+      { user: userId },
+      'No borrower profile found for this user',
+    );
+  }
 }

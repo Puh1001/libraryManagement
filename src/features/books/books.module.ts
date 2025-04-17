@@ -6,6 +6,7 @@ import { Book, BookSchema } from './schemas/book.schema';
 import { Author, AuthorSchema } from './schemas/author.schema';
 import { BookRepository } from './repositories/book.repository';
 import { AuthorRepository } from './repositories/author.repository';
+import { DigitalBookController } from './digital-book/digital-book.controller';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { AuthorRepository } from './repositories/author.repository';
       { name: Author.name, schema: AuthorSchema },
     ]),
   ],
-  controllers: [BooksController],
+  controllers: [BooksController, DigitalBookController],
   providers: [BooksService, BookRepository, AuthorRepository],
   exports: [BooksService],
 })

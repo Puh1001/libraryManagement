@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import { PaginatedParamsDto } from 'src/common/dto/paginated-query.dto';
 import { BooksService } from 'src/features/books/books.service';
@@ -48,6 +49,15 @@ export class LoansService {
 
   findOne(id: string) {
     return this.bookLoanRepository.findOne({ _id: id });
+  }
+
+  async getLoanHistoryForUser(userId: string, queryParams: PaginatedParamsDto) {
+    const borrower = await this.borrowerRepository.findOne({ user: userId });
+    if (!borrower) {
+      throw new NotFoundException('No borrower profile found for this user');
+    }
+
+    return this.findByBorrower(borrower._id, queryParams);
   }
 
   async remove(id: string) {
