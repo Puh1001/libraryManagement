@@ -18,7 +18,7 @@ export class Book extends Document {
   @Prop({ unique: true })
   name: string;
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, default: 0 })
   stockCount: number;
 
   @Prop()
@@ -31,11 +31,11 @@ export class Book extends Document {
   author: Author;
 
   @Prop({
-    type: String,
+    type: [String],
     enum: Object.values(BookType),
-    default: BookType.PHYSICAL,
+    default: [BookType.PHYSICAL],
   })
-  type: string;
+  types: string[];
 
   @Prop()
   coverImage: string;

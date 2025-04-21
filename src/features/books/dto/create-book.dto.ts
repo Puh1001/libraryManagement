@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsArray,
   IsEnum,
   IsMongoId,
   IsNumber,
@@ -22,17 +23,29 @@ export class CreateBookDto {
   @IsMongoId()
   authorId: string;
 
-  @ApiProperty({ example: 5 })
+  @ApiProperty({
+    example: 5,
+    description: 'Number of physical copies (if applicable)',
+  })
   @IsNumber()
-  @Min(1)
-  stockCount: number;
-
-  @ApiProperty({ enum: BookType, default: BookType.PHYSICAL })
-  @IsEnum(BookType)
+  @Min(0)
   @IsOptional()
-  type?: BookType = BookType.PHYSICAL;
+  stockCount?: number = 0;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    enum: BookType,
+    isArray: true,
+    example: ['physical', 'digital'],
+    description: 'Types of book formats available',
+  })
+  @IsArray()
+  @IsEnum(BookType, { each: true })
+  types: BookType[] = [BookType.PHYSICAL];
+
+  @ApiProperty({
+    required: false,
+    description: 'URL to digital file (required if digital type is included)',
+  })
   @IsString()
   @IsOptional()
   fileUrl?: string;

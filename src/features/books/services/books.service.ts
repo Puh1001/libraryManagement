@@ -1,4 +1,3 @@
-// src/features/book/services/book.service.ts
 import {
   BadRequestException,
   ConflictException,
@@ -8,11 +7,12 @@ import { ConfigService } from '@nestjs/config';
 import mongoose from 'mongoose';
 import { EnvironmentConstants } from 'src/common/constants/environment.constants';
 import { PaginatedParamsDto } from 'src/common/dto/paginated-query.dto';
-import { CreateBookDto } from './dto/create-book.dto';
-import { UpdateBookDto } from './dto/update-book.dto';
-import { AuthorRepository } from './repositories/author.repository';
-import { BookRepository } from './repositories/book.repository';
-import { BookType } from './schemas/book.schema';
+import { CreateBookDto } from '../dto/create-book.dto';
+import { UpdateBookDto } from '../dto/update-book.dto';
+import { AuthorRepository } from '../repositories/author.repository';
+import { BookRepository } from '../repositories/book.repository';
+import { BookType } from '../schemas/book.schema';
+import { UpdateBookTypesDto } from '../dto/update-book-types.dto';
 
 @Injectable()
 export class BooksService {
@@ -29,8 +29,17 @@ export class BooksService {
         'Author with given id not found.',
       );
 
-      if (payload.type === BookType.DIGITAL && !payload.fileUrl) {
+      if (payload.types.includes(BookType.DIGITAL) && !payload.fileUrl) {
         throw new BadRequestException('File URL is required for digital books');
+      }
+
+      if (
+        payload.types.includes(BookType.PHYSICAL) &&
+        (!payload.stockCount || payload.stockCount <= 0)
+      ) {
+        throw new BadRequestException(
+          'Stock count must be greater than 0 for physical books',
+        );
       }
 
       return await this.bookRepository.create({
@@ -92,13 +101,17 @@ export class BooksService {
   async updateBookFile(id: string, filePath: string) {
     const book = await this.findOne(id);
 
-    if (book.type !== BookType.DIGITAL) {
-      throw new BadRequestException('Only digital books can have files');
+    const types = book.types || [];
+    if (!types.includes(BookType.DIGITAL)) {
+      types.push(BookType.DIGITAL);
     }
 
     return this.bookRepository.findOneAndUpdate(
       { id: book.id },
-      { fileUrl: filePath },
+      {
+        fileUrl: filePath,
+        types,
+      },
     );
   }
 
@@ -122,5 +135,33 @@ export class BooksService {
       { id: book.id },
       { stockCount: book.stockCount + 1 },
     );
+  }
+
+  async updateBookTypes(id: string, updateTypesDto: UpdateBookTypesDto) {
+    const book = await this.findOne(id);
+
+    if (updateTypesDto.types.includes(BookType.DIGITAL) && !book.fileUrl) {
+      throw new BadRequestException(
+        'Cannot set digital type when no file is uploaded. Please upload a file first.',
+      );
+    }
+
+    if (
+      updateTypesDto.types.includes(BookType.PHYSICAL) &&
+      updateTypesDto.stockCount === undefined &&
+      book.stockCount === 0
+    ) {
+      throw new BadRequestException(
+        'Stock count must be provided when adding physical type.',
+      );
+    }
+
+    const updateData: any = { types: updateTypesDto.types };
+
+    if (updateTypesDto.stockCount !== undefined) {
+      updateData.stockCount = updateTypesDto.stockCount;
+    }
+
+    return this.bookRepository.findOneAndUpdate({ id: book.id }, updateData);
   }
 }

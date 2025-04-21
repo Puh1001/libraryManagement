@@ -5,11 +5,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PaginatedParamsDto } from 'src/common/dto/paginated-query.dto';
-import { BooksService } from 'src/features/books/books.service';
+import { BooksService } from 'src/features/books/services/books.service';
 import { BorrowersService } from 'src/features/borrowers/services/borrowers.service';
 import { CreateLoanDto, StatusEnum } from './dto/create-loan.dto';
 import { BookLoanRepository } from './repository/loan.repository';
 import { UserRole } from 'src/features/users/schemas/user.schemas';
+import { BorrowerRepository } from 'src/features/borrowers/repositories/book.repository';
+import { BookType } from '../books/schemas/book.schema';
 
 @Injectable()
 export class LoansService {
@@ -24,15 +26,22 @@ export class LoansService {
       this.borrowerService.findOne(borrowerId),
       this.bookService.findOne(bookId),
     ]);
+
+    if (!book.types.includes(BookType.PHYSICAL)) {
+      throw new BadRequestException('Only physical books can be borrowed');
+    }
+
     if (book.stockCount < 1) {
       throw new BadRequestException('Book out of stock.');
     }
+
     const result = await this.bookLoanRepository.create({
       borrower: borrower._id,
       book: book._id,
       status: StatusEnum.LENT,
       loanDate: new Date(),
     } as any);
+
     await this.bookService.lentBook(bookId);
     return result;
   }
@@ -52,12 +61,12 @@ export class LoansService {
   }
 
   async getLoanHistoryForUser(userId: string, queryParams: PaginatedParamsDto) {
-    const borrower = await this.borrowerRepository.findOne({ user: userId });
+    const borrower = await this.borrowerService.findByUserId(userId);
     if (!borrower) {
       throw new NotFoundException('No borrower profile found for this user');
     }
 
-    return this.findByBorrower(borrower._id, queryParams);
+    return this.findByBorrower(borrower._id as string, queryParams);
   }
 
   async remove(id: string) {

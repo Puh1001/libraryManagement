@@ -22,11 +22,16 @@ import { CreateLoanDto } from './dto/create-loan.dto';
 import { LoansService } from './loan.service';
 import { UserRole } from '../users/schemas/user.schemas';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { BorrowersService } from '../borrowers/services/borrowers.service';
+import { PaginatedParamsDto } from 'src/common/dto/paginated-query.dto';
 
 @ApiTags('Loans')
 @Controller('api/v1/book-loans')
 export class LoansController {
-  constructor(private readonly loansService: LoansService) {}
+  constructor(
+    private readonly loansService: LoansService,
+    private readonly borrowerService: BorrowersService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthenticationGuard)
@@ -89,12 +94,14 @@ export class LoansController {
     return this.loansService.remove(id);
   }
 
-  @Get('reader/history')
+  @Get('user/:userId/history')
   @UseGuards(JwtAuthenticationGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get loan history for current user' })
-  async getLoanHistoryForUser(userId: string, queryParams: PaginatedParamsDto) {
-    const borrower = await this.borrowerService.findByUserId(userId);
-    return this.findByBorrower(borrower.id, queryParams);
+  @ApiOperation({ summary: 'Get loan history for user' })
+  getLoanHistoryForUser(
+    @Param('userId') userId: string,
+    @Query() queryParams: PaginatedParamsDto,
+  ) {
+    return this.loansService.getLoanHistoryForUser(userId, queryParams);
   }
 }

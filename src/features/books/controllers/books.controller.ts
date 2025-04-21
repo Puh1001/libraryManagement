@@ -20,16 +20,19 @@ import {
   ApiResponse,
   ApiConsumes,
   ApiBearerAuth,
+  ApiParam,
+  ApiBody,
 } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import JwtAuthenticationGuard from '../authentication/guards/jwt.guard';
+import JwtAuthenticationGuard from '../../authentication/guards/jwt.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/role.decorator';
-import { UserRole } from '../users/schemas/user.schemas';
-import { CreateBookDto } from './dto/create-book.dto';
-import { UpdateBookDto } from './dto/update-book.dto';
-import { BooksService } from './books.service';
+import { UserRole } from '../../users/schemas/user.schemas';
+import { CreateBookDto } from '../dto/create-book.dto';
+import { UpdateBookDto } from '../dto/update-book.dto';
+import { BooksService } from '../services/books.service';
+import { UpdateBookTypesDto } from '../dto/update-book-types.dto';
 
 @ApiTags('Books')
 @Controller('api/v1/books')
@@ -45,12 +48,38 @@ export class BooksController {
     return this.bookService.create(createBookDto);
   }
 
+  @Patch(':id/types')
+  @UseGuards(JwtAuthenticationGuard, RolesGuard)
+  @Roles(UserRole.LIBRARIAN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update book formats (physical/digital)' })
+  @ApiParam({ name: 'id', description: 'Book ID' })
+  updateBookTypes(
+    @Param('id') id: string,
+    @Body() updateTypesDto: UpdateBookTypesDto,
+  ) {
+    return this.bookService.updateBookTypes(id, updateTypesDto);
+  }
+
   @Post(':id/cover')
   @UseGuards(JwtAuthenticationGuard, RolesGuard)
   @Roles(UserRole.LIBRARIAN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Upload book cover image (librarians only)' })
+  @ApiParam({ name: 'id', description: 'Book ID' })
   @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Book cover image (JPG, JPEG, PNG, GIF only)',
+        },
+      },
+    },
+  })
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -82,7 +111,20 @@ export class BooksController {
   @ApiOperation({
     summary: 'Upload book file for digital books (librarians only)',
   })
+  @ApiParam({ name: 'id', description: 'Book ID' })
   @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Book file (PDF, EPUB, etc.)',
+        },
+      },
+    },
+  })
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
