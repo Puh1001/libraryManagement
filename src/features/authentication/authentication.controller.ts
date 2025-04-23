@@ -13,7 +13,7 @@ import {
 import { Request, Response } from 'express';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { UserDocument } from '../users/schemas/user.schemas';
-import { AuthenticationService } from './authentication.service';
+import { AuthenticationService } from './services/authentication.service';
 import { CookieService } from './cookie.service';
 import { ChangePasswordDTO } from './dto/change-password.dto';
 import { RegisterDto } from './dto/register.dto';

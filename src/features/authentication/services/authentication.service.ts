@@ -4,11 +4,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
-import { UserDocument } from 'src/features/users/schemas/user.schemas';
-import { UsersService } from 'src/features/users/users.service';
-import { ChangePasswordDTO } from './dto/change-password.dto';
-import { LoginDTO } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
+import { UserDocument } from '../../users/schemas/user.schemas';
+import { UsersService } from '../../users/users.service';
+import { ChangePasswordDTO } from '../dto/change-password.dto';
+import { LoginDTO } from '../dto/login.dto';
+import { RegisterDto } from '../dto/register.dto';
 
 @Injectable()
 export class AuthenticationService {

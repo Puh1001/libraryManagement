@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { EnvironmentConstants } from 'src/common/constants/environment.constants';
 import { UsersModule } from 'src/features/users/users.module';
 import { AuthenticationController } from './authentication.controller';
-import { AuthenticationService } from './authentication.service';
+import { AuthenticationService } from './services/authentication.service';
 import { CookieService } from './cookie.service';
 import {
   RefreshToken,
