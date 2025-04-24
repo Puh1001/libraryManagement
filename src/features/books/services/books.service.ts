@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import mongoose from 'mongoose';
-import { EnvironmentConstants } from 'src/common/constants/environment.constants';
-import { PaginatedParamsDto } from 'src/common/dto/paginated-query.dto';
+import { EnvironmentConstants } from '../../../common/constants/environment.constants';
+import { PaginatedParamsDto } from '../../../common/dto/paginated-query.dto';
 import { CreateBookDto } from '../dto/create-book.dto';
 import { UpdateBookDto } from '../dto/update-book.dto';
 import { AuthorRepository } from '../repositories/author.repository';

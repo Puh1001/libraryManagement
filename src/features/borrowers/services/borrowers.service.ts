@@ -1,10 +1,10 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EnvironmentConstants } from 'src/common/constants/environment.constants';
-import { PaginatedParamsDto } from 'src/common/dto/paginated-query.dto';
+import { EnvironmentConstants } from '../../../common/constants/environment.constants';
+import { PaginatedParamsDto } from '../../../common/dto/paginated-query.dto';
 import { CreateBorrowerDto } from '../dto/create-borrower.dto';
 import { UpdateBorrowerDto } from '../dto/update-borrower.dto';
-import { BorrowerRepository } from '../repositories/book.repository';
+import { BorrowerRepository } from '../repositories/borrower.repository';
 
 @Injectable()
 export class BorrowersService {

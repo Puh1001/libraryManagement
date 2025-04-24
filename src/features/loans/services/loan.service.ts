@@ -4,14 +4,14 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
-import { PaginatedParamsDto } from 'src/common/dto/paginated-query.dto';
-import { BooksService } from 'src/features/books/services/books.service';
-import { BorrowersService } from 'src/features/borrowers/services/borrowers.service';
-import { CreateLoanDto, StatusEnum } from './dto/create-loan.dto';
-import { BookLoanRepository } from './repository/loan.repository';
-import { UserRole } from 'src/features/users/schemas/user.schemas';
-import { BorrowerRepository } from 'src/features/borrowers/repositories/book.repository';
-import { BookType } from '../books/schemas/book.schema';
+import { PaginatedParamsDto } from '../../../common/dto/paginated-query.dto';
+import { BooksService } from '../../books/services/books.service';
+import { BorrowersService } from '../../borrowers/services/borrowers.service';
+import { CreateLoanDto, StatusEnum } from '../dto/create-loan.dto';
+import { BookLoanRepository } from '../repository/loan.repository';
+import { UserRole } from '../../users/schemas/user.schemas';
+import { BorrowerRepository } from '../../borrowers/repositories/borrower.repository';
+import { BookType } from '../../books/schemas/book.schema';
 
 @Injectable()
 export class LoansService {
