@@ -6,9 +6,11 @@ import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
 import { GlobalExceptionFilter } from './common/filters/global-expection.filter';
 import { ValidationPipe } from '@nestjs/common';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.use(cookieParser());
   const configService = app.get(ConfigService);
 
@@ -28,6 +30,8 @@ async function bootstrap() {
       forbidUnknownValues: true,
     }),
   );
+  app.useStaticAssets(join(__dirname, '..', 'uploads'));
+
   app.useGlobalFilters(new GlobalExceptionFilter());
   await app.listen(configService.get(EnvironmentConstants.PORT) || 3000);
   console.log(`Application is running on: ${await app.getUrl()}`);

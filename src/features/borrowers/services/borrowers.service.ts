@@ -6,6 +6,7 @@ import { CreateBorrowerDto } from '../dto/create-borrower.dto';
 import { UpdateBorrowerDto } from '../dto/update-borrower.dto';
 import { BorrowerRepository } from '../repositories/borrower.repository';
 import { UserDocument } from '../../users/schemas/user.schemas';
+import { Types } from 'mongoose';
 
 /**
  * Service responsible for managing borrowers in the library system
@@ -61,7 +62,10 @@ export class BorrowersService {
   async findOne(id: string) {
     const borrower = await this.borrowerRepository.findOne(
       {
-        _id: id,
+        $or: [
+          { _id: Types.ObjectId.isValid(id) ? new Types.ObjectId(id) : id },
+          { id: id },
+        ],
       },
       'Borrower with given id not found.',
     );
