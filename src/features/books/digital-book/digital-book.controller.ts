@@ -49,4 +49,13 @@ export class DigitalBookController {
 
     return new StreamableFile(file);
   }
+
+  @Get(':id/cover')
+  async viewCover(@Param('id') id: string, @Res() res: Response) {
+    const book = await this.bookService.findOne(id);
+    if (!book.coverImage) {
+      throw new NotFoundException('Book cover not found');
+    }
+    return res.sendFile(join(process.cwd(), book.coverImage));
+  }
 }
